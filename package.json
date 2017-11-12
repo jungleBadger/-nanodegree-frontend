@@ -51,6 +51,7 @@
 		"gulp-util": "^3.0.8",
 		"gulp-watch": "^4.3.11",
 		"jsdom": "^11.1.0",
+		"knockout": "^3.4.2",
 		"mocha": "^3.4.2",
 		"node-fetch": "^1.7.3",
 		"nsp": "^2.6.3",
