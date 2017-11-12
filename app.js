@@ -13,6 +13,7 @@
 	const appPort = process.env.APP_PORT || 6050;
 	const server = require("http").createServer(app);
 	const io = require("socket.io")(server);
+	const request = require("request");
 	const cookieSession = require("cookie-session");
 	const cookieParser = require("cookie-parser");
 	const compress = require("compression");
@@ -50,7 +51,7 @@
 		app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
 	}
 
-	require("./server/routes/index")(app);
+	require("./server/routes/index")(app, request);
 
     app.listen(appPort, () => {
 		process.stdout.write(["\nServer running on port:", appPort, "\n"].join(" "));
