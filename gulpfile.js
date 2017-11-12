@@ -35,7 +35,6 @@
 		cssnano()
 	];
 	const childProcess = require("child_process");
-	const WEBHOOK_ENDPOINT = process.env.WEBHOOK_ENDPOINT || argv.slack;
 	let currentContext = "";
 	let browserifyInstance;
 	let modulePath;
@@ -49,51 +48,11 @@
 	process.env.NODE_ENV = argv.prod ? "production" : "development";
 	isProd = process.env.NODE_ENV === "production";
 	let methods = {
-		"sendSlackMessage": function (payload) {
-			return new Promise(function (resolve, reject) {
-				if (WEBHOOK_ENDPOINT) {
-					fetch(WEBHOOK_ENDPOINT, {
-						"method": "POST",
-						"body": JSON.stringify(payload),
-						"headers": {
-							"Content-Type": "application/json"
-						},
-					}).then(response => resolve(response))
-						.catch(error => reject(error));
-				} else {
-					reject("Webhook ID not available");
-				}
-			});
-		},
 		"errorHandler": function (module, error, stack) {
 			gutil.log(gutil.colors.red("ERROR FOUND BUILDING THIS ARTIFACT:"), gutil.colors.yellow(module));
 			gutil.log(error);
 			gutil.log(stack);
-			if (isBluemix) {
-				let log_url;
-				if (isProd) {
-					log_url = "https://console.bluemix.net/devops/pipelines/8828557f-bb39-4f96-9d69-2c015ebfabb0?env_id=ibm%3Ayp%3Aus-south";
-				} else {
-					log_url = "https://console.bluemix.net/devops/pipelines/51d76df7-aed9-4374-8e0c-be1a6c8924df?env_id=ibm%3Ayp%3Aus-south";
-				}
-				methods.sendSlackMessage({
-					"username": "BUILD FAILING",
-					"icon_emoji": ":interrobang:",
-					"text": [
-						"*ENVIRONMENT*: ", process.env.NODE_ENV, "\n",
-						error, "\n",
-						"Check the <", log_url, "|logs>"
-					].join("")
-				}).then(function () {
-					gutil.log("Webhook sent");
-					return process.exit(1);
-				}).catch(function(error) {
-					gutil.log(error);
-					return process.exit(1);
-				});
-			} else {
-				return process.exit(1);
-			}
+			return process.exit(1);
 		},
 		"bundleJS": function () {
 			if (isProd) {
@@ -103,7 +62,6 @@
 			browserifyInstance.bundle()
 				.on("error", function (err) {
 					console.log(err);
-					console.log(" AQUUQ")
 				})
 				.pipe(source(path.join(modulePath, "js/main.js")))
 				.pipe(cond(!isProd, plumber()))
@@ -127,11 +85,6 @@
 					});
 				})
 
-			});
-		},
-		"setCFManifest": function () {
-			return fse.copy(path.join("root", isProd ? "manifest.prod.yml" : "manifest.dev.yml"), "manifest.yml", {
-				"overwrite": true
 			});
 		},
 		"htmlTemplate": function (module, title) {
@@ -163,7 +116,7 @@
 		}
 	};
 
-	gulp.task("build-all", ["lint:server", "set-manifest"], function () {
+	gulp.task("build-all", ["lint:server"], function () {
 		fs.readdir("./client", function (err, files) {
 			files.forEach(function (file) {
 				let stat = fs.statSync(path.join("client"));
@@ -203,7 +156,6 @@
 			.transform(babelify)
 			.transform(vueify)
 			.on("update",function () {
-				console.log(" AQUI");
 				return methods.bundleJS();
 			});
 		return methods.bundleJS();
@@ -278,30 +230,6 @@
 	});
 
 
-	gulp.task("set-manifest", function (done) {
-		methods.setCFManifest().then(function () {
-			done();
-		}).catch(function (error) {
-			methods.errorHandler("set-manifest", error, "Check the logs to see where it fails");
-		});
-	});
-
-	gulp.task("notifyBuildSuccess", function () {
-		methods.sendSlackMessage({
-			"username": "BUILD SUCCESS",
-			"text": "ENVIRONMENT: *" + process.env.NODE_ENV + "* finished building and preparing to deploy",
-			"icon_emoji": ":cat2:"
-		})
-	});
-
-	gulp.task("notifyDeploySuccess", function () {
-		methods.sendSlackMessage({
-			"username": "DEPLOY SUCCESS",
-			"text": "ENVIRONMENT: *" + process.env.NODE_ENV + "* finished deploy to Bluemix",
-			"icon_emoji": ":bluemix:"
-		})
-	});
-
 	gulp.task("create-module", function () {
 		let module = argv.m || argv.module;
 		let override = argv.o || argv.override;
@@ -354,7 +282,6 @@
 		gutil.log(gutil.colors.green("Task: js"), gutil.colors.magenta('#'));
 		gutil.log(gutil.colors.green("Task: css"), gutil.colors.magenta('#'));
 		gutil.log(gutil.colors.green("Task: generate-sw"), gutil.colors.magenta('#'));
-		gutil.log(gutil.colors.green("Task: set-manifest"), gutil.colors.magenta('#'));
 		gutil.log(gutil.colors.green("Task: create-module"), gutil.colors.magenta('#'));
 		gutil.log(gutil.colors.green("Task: images"), gutil.colors.magenta('#'));
 	});

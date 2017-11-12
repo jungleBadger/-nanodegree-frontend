@@ -12,7 +12,7 @@
     const app = express();
 	const appPort = process.env.APP_PORT || 6050;
 	const server = require("http").createServer(app);
-	const io = require("socket.io")(server);
+	// const io = require("socket.io")(server);
 	const request = require("request");
 	const cookieSession = require("cookie-session");
 	const cookieParser = require("cookie-parser");
@@ -53,7 +53,7 @@
 
 	require("./server/routes/index")(app, request);
 
-    app.listen(appPort, () => {
+    server.listen(appPort, () => {
 		process.stdout.write(["\nServer running on port:", appPort, "\n"].join(" "));
 	});
 

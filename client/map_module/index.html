@@ -2,129 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="manifest" href="/etc/manifest.json">
+	<meta name="theme-color" content="#4A8FCC">
+    <title>Proxxi CTS</title>
     <style>
-        .selected {
-            background: gainsboro;
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+			font-family: 'Open Sans', sans-serif;
+            padding: 0;
         }
     </style>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 </head>
 <body>
 
-    <ul id="cat-list">
+    <div id="app">
+    </div>
+	<noscript>
+		Your browser does not support Script at this time
+	</noscript>
+	<script defer src="/getMap"></script>
 
-    </ul>
-
-    <aside id="side-menu">
-
-
-    </aside>
-
-
-<script>
-
-    (function (){
-        "use strict";
-
-        const CAT_COUNT = 10;
-        let Cat = function Constructor(catObj) {
-            return {
-                "id": String(Date.now() + Math.random()),
-                "name": catObj.name,
-                "picture": catObj.picture || "",
-                "clicks": 0
-            }
-        };
-
-        let elements = {
-            "catList": document.querySelector("#cat-list"),
-            "sideMenu": document.querySelector("#side-menu")
-        };
-
-
-        let data = {
-            "cats": [],
-            "activeCat": "",
-            "init": function () {
-                new Array(CAT_COUNT).fill(0).forEach(() => {
-                    methods.addCat({
-                        "name": Date.now()
-                    });
-                });
-            }
-        };
-
-        let methods = {
-            "getCats": function () {
-                return data.cats || [];
-            },
-            "addCat": function (cat) {
-                setTimeout(() => {
-                    data.cats.push(new Cat(cat));
-                    listView.render();
-                }, 0);
-            },
-            "setActiveCat": function (ev) {
-                ev.stopPropagation();
-                data.activeCat = data.cats[data.cats.findIndex((cat) => {return cat.id === this.getAttribute("data-id")})];
-                methods.incrementCatClick();
-                sidemenuView.render();
-            },
-            "getActiveCat": function () {
-                return data.activeCat;
-            },
-            "incrementCatClick": function () {
-                data.cats.some((cat) => {
-                    if (cat.id === data.activeCat.id) {
-                        cat.clicks += 1;
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-                listView.render();
-            }
-        };
-
-        let listView = {
-            "addClickEvent": function (el) {
-                el.addEventListener("click", methods.setActiveCat);
-            },
-            "generateItem": function (cat) {
-                let li = document.createElement("li");
-                li.setAttribute("data-id", cat.id);
-                if (methods.getActiveCat().id === cat.id) {
-                    li.classList.add("selected");
-                }
-                li.appendChild(document.createTextNode(cat.name + " " + cat.clicks));
-                this.addClickEvent(li);
-                return li;
-            },
-            "render": function () {
-                elements.catList.innerHTML = "";
-                methods.getCats().forEach((cat) => {
-                    elements.catList.appendChild(this.generateItem(cat));
-                });
-            }
-        };
-
-        let sidemenuView = {
-            "populateBox": function () {
-                console.log(methods.getActiveCat());
-                elements.sideMenu.innerHTML = methods.getActiveCat().id + " " + methods.getActiveCat().clicks;
-            },
-            "render": function () {
-                elements.sideMenu.innerHTML = "";
-                this.populateBox();
-            }
-        };
-
-        data.init();
-
-
-    }());
-
-</script>
-
+	<script defer src="./map_module/dist/js/bundle.js"></script>
+	<script async src="./etc/libs/fontawesome/fontawesome.min.js"></script>
+	<script async src="./etc/libs/fontawesome/light.min.js"></script>
 </body>
 </html>
