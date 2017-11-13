@@ -193,7 +193,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		return console.log(response);
 	});
 
-	var markers = [];
 	var vms = require("./helpers/vms");
 	var elements = require("./helpers/elements");
 	var ViewModel = require("./viewmodels/MainVM");
@@ -228,20 +227,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				map: vms.get("main", "map"),
 				anchorPoint: new window.google.maps.Point(0, -29)
 			}));
+			vms.set("main", "bounds", new window.google.maps.LatLngBounds());
 			vms.get("main", "searchBox").addListener("places_changed", function () {
 				var places = vms.get("main", "searchBox").getPlaces();
 				if (!places || !places.length) {
 					return;
 				}
 				// Clear out the old markers.
-				markers.forEach(function (marker) {
-					marker.setMap(null);
-				});
-				markers = [];
+
+				// vms.main.hideMarkers();
+				// vms.main.cleanMarkers();
 
 				// For each place, get the icon, name and location.
-				var bounds = new window.google.maps.LatLngBounds();
 				places.forEach(function (place) {
+					vms.main.addListOption(place);
 					if (!place.geometry) {
 						console.log("Returned place contains no geometry");
 						return;
@@ -255,7 +254,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					};
 
 					// Create a this.marker for each place.
-					markers.push(new window.google.maps.Marker({
+					vms.main.addMarker(new window.google.maps.Marker({
 						"map": vms.get("main", "map"),
 						"icon": icon,
 						"title": place.name,
@@ -264,12 +263,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 					if (place.geometry.viewport) {
 						// Only geocodes have viewport.
-						bounds.union(place.geometry.viewport);
+						vms.get("main", "bounds").union(place.geometry.viewport);
 					} else {
-						bounds.extend(place.geometry.location);
+						vms.get("main", "bounds").extend(place.geometry.location);
 					}
 				});
-				vms.get("main", "map").fitBounds(bounds);
+				vms.get("main", "map").fitBounds(vms.get("main", "bounds"));
 			});
 
 			return this;
@@ -373,32 +372,58 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	"use strict";
 
 	module.exports = function Constructor(ko) {
-		var _this = this;
-
+		var self = this;
 		this.addressFilter = ko.observable();
-		this.test = ko.observableArray([]);
+		this.optionsList = ko.observableArray([]);
+		this.clearOptionList = function () {
+			console.log(self.optionsList());
+			self.optionsList.removeAll();
+		};
 		this.map = "";
 		this.infoWindow = "";
+		this.markers = [];
+		this.bounds = "";
 		this.currentPos = {
 			"lat": -22.85833,
 			"lng": -47.22
 		};
-
 		this.searchBox = "";
 		this.autocomplete = "";
-		this.addTestItem = function () {
-			if (!this.addressFilter()) {
-				return false;
-			}
-			this.test.push({
-				"x": this.addressFilter()
+		this.addMarker = function (marker) {
+			this.markers.push(marker);
+		};
+		this.cleanMarkers = function () {
+			self.hideMarkers();
+			self.markers = [];
+		};
+		this.hideMarkers = function () {
+			self.markers.forEach(function (marker) {
+				marker.setMap(null);
 			});
 		};
-		this.computedTest = ko.computed(function () {
-			return _this.addressFilter() ? _this.test().filter(function (item) {
-				return item.x.indexOf(_this.addressFilter()) > -1;
-			}) : _this.test();
-		});
+		this.addListOption = function (option) {
+			this.optionsList.push(option);
+		};
+
+		this.test = function (optionIndex) {
+			console.log(optionIndex);
+			console.log(this);
+			self.bounds.extend(this.geometry.location);
+			self.map.fitBounds(self.bounds);
+		};
+
+		this.clearResults = function () {
+			self.cleanMarkers();
+			self.clearOptionList();
+		};
+
+		// this.computedTest = ko.computed(() => {
+		// 	return this.addressFilter() ?
+		// 		this.test().filter((item) => {
+		// 			return item.x.indexOf(this.addressFilter()) > -1
+		// 		}) :
+		// 		this.test();
+		// });
 	};
 })();
 

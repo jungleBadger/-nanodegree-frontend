@@ -16,14 +16,32 @@
 			box-sizing: border-box;
 		}
 	</style>
-	<link rel="stylesheet" href="./ko_module/dist/css/style.css">
+	<link rel="stylesheet" href="./ko_module/css/style.css">
 </head>
 <body>
 <div id="app">
 	<aside id="sidemenu">
-		<input id="pac-input" class="controls" type="text"
-			   data-bind="value: addressFilter, valueUpdate: 'input'"
-			   placeholder="Enter a location">
+		<header>
+			<input
+				id="pac-input"
+			   	class="controls"
+				type="text"
+			  	data-bind="value: addressFilter, valueUpdate: 'input'"
+				placeholder="Enter a location"
+			>
+			<button class="button" data-bind="click: clearResults">Clear results</button>
+		</header>
+
+
+		<div id="options-list">
+			<div data-bind="foreach: optionsList">
+				<div data-bind="click: $parent.test">
+					<div data-bind="text: name"></div>
+					<div data-bind="text: formatted_address"></div>
+				</div>
+
+			</div>
+		</div>
 	</aside>
 
 	<div id="map">

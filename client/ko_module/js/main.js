@@ -1,7 +1,6 @@
 (function (window) {
 	"use strict";
 
-
 	const ko = require("knockout");
 	const GmapModel = require("./model/GmapModel");
 	const getMatrix = require("./factory/factory").getMatrix;
@@ -19,7 +18,6 @@
 	}).then((response) => console.log(response));
 
 
-	let markers = [];
 	let vms = require("./helpers/vms");
 	let elements = require("./helpers/elements");
 	let ViewModel = require("./viewmodels/MainVM");
@@ -57,20 +55,20 @@
 				map: vms.get("main", "map"),
 				anchorPoint: new window.google.maps.Point(0, -29)
 			}));
+			vms.set("main", "bounds", new window.google.maps.LatLngBounds());
 			vms.get("main", "searchBox").addListener("places_changed", function() {
 				let places = vms.get("main", "searchBox").getPlaces();
 				if (!places || !places.length) {
 					return;
 				}
 				// Clear out the old markers.
-				markers.forEach(function(marker) {
-					marker.setMap(null);
-				});
-				markers = [];
+
+				// vms.main.hideMarkers();
+				// vms.main.cleanMarkers();
 
 				// For each place, get the icon, name and location.
-				let bounds = new window.google.maps.LatLngBounds();
 				places.forEach(function(place) {
+					vms.main.addListOption(place);
 					if (!place.geometry) {
 						console.log("Returned place contains no geometry");
 						return;
@@ -84,7 +82,7 @@
 					};
 
 					// Create a this.marker for each place.
-					markers.push(new window.google.maps.Marker({
+					vms.main.addMarker(new window.google.maps.Marker({
 						"map": vms.get("main", "map"),
 						"icon": icon,
 						"title": place.name,
@@ -93,12 +91,12 @@
 
 					if (place.geometry.viewport) {
 						// Only geocodes have viewport.
-						bounds.union(place.geometry.viewport);
+						vms.get("main", "bounds").union(place.geometry.viewport);
 					} else {
-						bounds.extend(place.geometry.location);
+						vms.get("main", "bounds").extend(place.geometry.location);
 					}
 				});
-				vms.get("main", "map").fitBounds(bounds);
+				vms.get("main", "map").fitBounds(vms.get("main", "bounds"));
 			});
 
 			return this;
