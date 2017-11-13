@@ -19,6 +19,7 @@
 2. Clone this repository
 3. Within root folder run `npm install`
 4. To build further run `gulp build -m {MODULE_NAME} eg: gulp build -m ko -w`
+5. BE SURE TO CHANGE THE .ENV_MODEL TO .ENV IN ORDER TO GET APP VARIABLES UP AND RUNNING
 
 ### To Run
 1. From root folder run `node app.js`
