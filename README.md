@@ -22,3 +22,6 @@
 
 ### To Run
 1. From root folder run `node app.js`
+
+### Application
+app is running on [Heroku](https://udacity-frontend.herokuapp.com/)
