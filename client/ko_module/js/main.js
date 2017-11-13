@@ -47,10 +47,12 @@
 			});
 		},
 		"initGMaps": function () {
+			let initialPoint = new window.google.maps.LatLng(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng);
 			vms.set("main", "map", new window.google.maps.Map(
 				elements.get("mapEl"),
-				new GmapModel(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng))
-			);
+				new GmapModel(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng)
+			));
+
 			vms.set("main", "searchBox", new window.google.maps.places.SearchBox(elements.get("searchBox")));
 			vms.set("main", "infoWindow",  new window.google.maps.InfoWindow());
 			vms.set("main", "marker", new window.google.maps.Marker({
@@ -65,6 +67,33 @@
 				}
 				places.forEach(methods.generateNewOption);
 				vms.get("main", "map").fitBounds(vms.get("main", "bounds"));
+			});
+
+			vms.set("main", "service", new window.google.maps.places.PlacesService(vms.get("main", "map")));
+			vms.get("main", "service").nearbySearch({
+				"location": initialPoint,
+				"radius": "300",
+				"query": "restaurant",
+				"openNow": true
+			}, function (results, status) {
+				if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+					if (results && results.length) {
+						results.forEach(function (place) {
+							let isDuplicated = vms.get("main", "markers")[place.id];
+							if (!isDuplicated) {
+								vms.get("main", "service").getDetails(place, function (finalResult, innerStatus) {
+									if (innerStatus === window.google.maps.places.PlacesServiceStatus.OK) {
+										methods.generateNewOption(finalResult);
+									} else {
+										alert(innerStatus);
+									}
+								});
+							}
+						});
+					}
+				} else {
+					alert(status);
+				}
 			});
 
 			return this;

@@ -6,6 +6,7 @@
 	display: -ms-flexbox;
 	display: flex;
 	font-family: Roboto;
+	background-color: gainsboro;
 }
 
 #sidemenu {
@@ -34,6 +35,10 @@
 	display: flex;
 }
 
+#toggle-results {
+	display: none;
+}
+
 .controls {
 	border: 1px solid transparent;
 	border-radius: 2px 0 0 2px;
@@ -53,7 +58,7 @@
 	margin-left: 12px;
 	padding: 0 11px 0 13px;
 	text-overflow: ellipsis;
-	width: 300px;
+	width: 100%;
 }
 
 #pac-input:focus {
@@ -85,17 +90,23 @@
 }
 
 #sidemenu > #options-list.active {
-	display: -webkit-box !important;
-	display: -ms-flexbox !important;
-	display: flex !important;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
 
 }
-
-
-
 .filter-holder {
 	width: 100%;
 	margin: 10px 0;
+}
+
+#sidemenu > header > button {
+	border: 1px solid green;
+	background-color: white;
+	color: black;
+	margin: 2px;
+	cursor: pointer;
+
 }
 
 .filter {
@@ -125,4 +136,45 @@
 	    -ms-flex: 8;
 	        flex: 8;
 	height: 100%;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+@media screen and (max-width: 740px) {
+	#sidemenu {
+		position: absolute;
+		height: 60px;
+		background: rgba(0, 0, 0, .2);
+		width: 100%;
+	}
+
+	#toggle-results {
+		display: block;
+	}
+
+	.option-item {
+		background-color: white;
+	}
+
+
+	#sidemenu > #options-list.active {
+		display: none;
+	}
+
+	#sidemenu.show-results {
+		height: 100%;
+	}
+
+	#sidemenu.show-results > #options-list.active {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+	}
 }

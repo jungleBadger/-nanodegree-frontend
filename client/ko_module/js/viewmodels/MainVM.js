@@ -9,6 +9,7 @@
 		this.map = "";
 		this.infoWindow = "";
 		this.markers = {};
+		this.service = "";
 		this.bounds = "";
 		this.currentPos = {
 			"lat": -22.85833,
@@ -40,11 +41,10 @@
 					marker.setAnimation(null);
 				}, 2000);
 			}
-		}
+		};
 
 		this.optionsList = ko.observableArray([]);
 		this.addListOption = function (option) {
-			console.log(option);
 			option.selected = ko.observable(false);
 			this.optionsList.push(option);
 		};
@@ -68,6 +68,34 @@
 			self.bounds.extend(this.geometry.location);
 			self.map.fitBounds(self.bounds);
 		};
+
+		this.highlightPlace = function (place) {
+			return new Promise((resolve, reject) => {
+				let photosUrl = [];
+				self.service.getDetails(place, function (finalResult, innerStatus) {
+					if (innerStatus === window.google.maps.places.PlacesServiceStatus.OK) {
+						if (finalResult.photos) {
+							finalResult.photos.forEach((photo) => {
+								try {
+									photosUrl.push(photo.getUrl({
+										"minWidth": 100,
+										"maxWidth": 100
+									}));
+								} catch (e) {
+									console.log(e);
+								}
+							});
+						}
+						finalResult.photosUrls = photosUrl;
+						resolve(finalResult);
+					} else {
+						reject(innerStatus);
+					}
+				});
+
+			});
+		};
+
 		this.clearResults = function () {
 			self.cleanMarkers();
 			self.clearOptionList();

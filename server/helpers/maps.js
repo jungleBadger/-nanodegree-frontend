@@ -1,16 +1,12 @@
 (function () {
-    "use strict";
-
-    const request = require("request");
-    const BASE_URL = "https://maps.googleapis.com/maps/api";
-    const API_KEY = process.env.MAPS_API_KEY;
-    module.exports = {
-    	"getMapClient": function (opts = {}) {
+	"use strict";
+	// "CmRSAAAAsHHOUANqZxZ8oJQutUw-pLrMmMuBYMeeUt6NXVnapEmRfOxfy227z49zZ2pv7xh7hzjbZygL_Gnah3weg7I4VXAPPHAWM6iIPiF0gSAsv3cWgZVW-Jmt_9dylpLxF3xtEhAyuZ1GhdBDDIvV22miKZARGhRgQj4VzIojzxfcf8B6xlGkdZq2jw"
+	const request = require("request");
+	const BASE_URL = "https://maps.googleapis.com/maps/api";
+	const API_KEY = process.env.MAPS_API_KEY;
+	module.exports = {
+		"getMapClient": function (opts = {}) {
 			return new Promise((resolve, reject) => {
-				console.log([BASE_URL, "/js",
-					"?key=", API_KEY,
-					(opts.libraries ? "&libraries=" + opts.libraries : ""),
-				].join(""))
 				request.get(
 					[BASE_URL, "/js",
 						"?key=", API_KEY,
@@ -54,10 +50,10 @@
 				);
 			});
 		},
-    	"matrix": function (opts = {}) {
-    		return new Promise((resolve, reject) => {
-    			if (opts && (!opts.origins || !opts.destinations)) {
-    				return reject("Missing parameters");
+		"matrix": function (opts = {}) {
+			return new Promise((resolve, reject) => {
+				if (opts && (!opts.origins || !opts.destinations)) {
+					return reject("Missing parameters");
 				}
 				request.get(
 					[BASE_URL, "/distancematrix/json",

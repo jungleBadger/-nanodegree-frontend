@@ -2,6 +2,7 @@
 	"use strict";
 
 	module.exports = function (vms) {
+		const infoWindowTemplate = require("../templates/infoWindow");
 		return {
 			"generateNewOption": function (place) {
 				vms.main.addListOption(place);
@@ -28,6 +29,17 @@
 				marker.addListener("click", function () {
 					vms.main.animateMarker(marker);
 					vms.get("main", "infoWindow").setContent(place.name);
+					vms.main.highlightPlace(place).then((placeData) => {
+						console.log(placeData);
+						vms.get("main", "infoWindow").setContent(
+							infoWindowTemplate(
+								place.name,
+								placeData.photosUrls[0],
+								place.formatted_address
+							)
+						);
+					});
+
 					vms.get("main", "infoWindow").open(vms.get("main", "map"), marker);
 				});
 
