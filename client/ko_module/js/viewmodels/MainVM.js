@@ -1,7 +1,9 @@
 (function (window) {
     "use strict";
 
-    module.exports = function Constructor(ko) {
+	const infoWindowTemplate = require("../templates/infoWindow");
+
+	module.exports = function Constructor(ko) {
 		let self = this;
 		this.addressFilter = ko.observable();
 		this.optionsFilter = ko.observable();
@@ -62,6 +64,15 @@
 					if (self.markers[markerId].id === this.id) {
 						self.animateMarker(self.markers[markerId]);
 						self.infoWindow.open(self.map, self.markers[markerId]);
+						self.highlightPlace(this).then((placeData) => {
+							self.infoWindow.setContent(
+								infoWindowTemplate(
+									this.name,
+									placeData.photosUrls[0],
+									this.formatted_address
+								)
+							);
+						});
 					}
 				}
 			}
