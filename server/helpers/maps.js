@@ -7,6 +7,10 @@
     module.exports = {
     	"getMapClient": function (opts = {}) {
 			return new Promise((resolve, reject) => {
+				console.log([BASE_URL, "/js",
+					"?key=", API_KEY,
+					(opts.libraries ? "&libraries=" + opts.libraries : ""),
+				].join(""))
 				request.get(
 					[BASE_URL, "/js",
 						"?key=", API_KEY,

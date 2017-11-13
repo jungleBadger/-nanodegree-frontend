@@ -21,27 +21,9 @@
 <body>
 <div id="app">
 	<aside id="sidemenu">
-		<input type="text"
-			   id="address-search"
-			   name="address-search"
-			   data-bind="value: addressFilter, valueUpdate: 'input'">
-		<input id="pac-input" class="controls" type="text" placeholder="Search Box">
-		<input id="pac-input-2" class="controls" type="text"
+		<input id="pac-input" class="controls" type="text"
+			   data-bind="value: addressFilter, valueUpdate: 'input'"
 			   placeholder="Enter a location">
-		<div id="type-selector" class="controls">
-			<input type="radio" name="type" id="changetype-all" checked="checked">
-			<label for="changetype-all">All</label>
-
-			<input type="radio" name="type" id="changetype-establishment">
-			<label for="changetype-establishment">Establishments</label>
-
-			<input type="radio" name="type" id="changetype-address">
-			<label for="changetype-address">Addresses</label>
-
-			<input type="radio" name="type" id="changetype-geocode">
-			<label for="changetype-geocode">Geocodes</label>
-		</div>
-
 	</aside>
 
 	<div id="map">

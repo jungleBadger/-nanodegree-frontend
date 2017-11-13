@@ -4,7 +4,7 @@
 	module.exports = function Constructor(lat, lng) {
 		return {
 			"zoom": 8,
-			"center": {"lat": lat, "lng": lng},
+			"center": {"lat": Number(lat), "lng": Number(lng)},
 			"elementType": "geometry",
 			"styles": [
 				{"elementType": "geometry", "stylers": [{"color": "#242f3e"}]},

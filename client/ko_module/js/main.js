@@ -7,9 +7,6 @@
 	const getMatrix = require("./factory/factory").getMatrix;
 	const getDirections = require("./factory/factory").getDirections;
 
-	let infowindow;
-	let marker;
-
 	getMatrix({
 		"origins": "4800 El camino Real, Los Altos, CA",
 		"destinations": "2465 Lathem Street, Mountain View, CA"
@@ -23,68 +20,48 @@
 
 
 	let markers = [];
-	let elements = {
-		"mapEl": "",
-		"searchBox": "",
-		"autocompleteBox": "",
-		"get": function (el) {
-			return elements[el];
-
-		},
-		"set": function (el, val) {
-			elements[el] = val;
-		}
-	};
-
-
-	let ViewModel = function () {
-		this.addressFilter = ko.observable();
-		this.test = ko.observableArray([]);
-		this.map = "";
-		this.searchBox = "";
-		this.autocomplete = "";
-		this.addTestItem = function () {
-			if (!this.addressFilter()) {
-				return false;
-			}
-			this.test.push({
-				"x": this.addressFilter()
-			});
-		};
-		this.computedTest = ko.computed(() => {
-			return this.addressFilter() ?
-				this.test().filter((item) => {
-					return item.x.indexOf(this.addressFilter()) > -1
-				}) :
-				this.test();
-		});
-	};
-
-
-
+	let vms = require("./helpers/vms");
+	let elements = require("./helpers/elements");
+	let ViewModel = require("./viewmodels/MainVM");
 	let app = {
-		"init": function () {
+		"getHTMLElements": function () {
 			elements.set("mapEl", document.getElementById("map"));
 			elements.set("searchBox", document.getElementById("pac-input"));
-			elements.set("autocompleteBox", document.getElementById("pac-input-2"));
-			ko.applyBindings(new ViewModel());
-			ViewModel.map = new window.google.maps.Map(elements.get("mapEl"), new GmapModel(-22.85833, -47.22));
-			ViewModel.searchBox = new window.google.maps.places.SearchBox(elements.get("searchBox"));
-			// ViewModel.map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(elements.get("searchBox"));
-			ViewModel.autocomplete = new window.google.maps.places.Autocomplete(elements.get("autocompleteBox"));
-			ViewModel.autocomplete.bindTo("bounds", ViewModel.map);
-			infowindow = new window.google.maps.InfoWindow();
-			marker = new window.google.maps.Marker({
-				map: ViewModel.map,
-				anchorPoint: new window.google.maps.Point(0, -29)
+			return this;
+		},
+		"initGeoLocation": function () {
+			return new Promise((resolve, reject) => {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition((position) => {
+						vms.set("main", "currentPos", {
+							"lat": position.coords.latitude,
+							"lng": position.coords.longitude
+						});
+						resolve(position);
+					}, function() {
+						reject("Error gathering location");
+					});
+				} else {
+					reject("Browser does not support geo queries");
+				}
 			});
-			ViewModel.searchBox.addListener("places_changed", function() {
-				let places = ViewModel.searchBox.getPlaces();
-
+		},
+		"initGMaps": function () {
+			vms.set("main", "map", new window.google.maps.Map(
+				elements.get("mapEl"),
+				new GmapModel(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng))
+			);
+			vms.set("main", "searchBox", new window.google.maps.places.SearchBox(elements.get("searchBox")));
+			vms.set("main", "infoWindow",  new window.google.maps.InfoWindow());
+			vms.set("main", "marker", new window.google.maps.Marker({
+				map: vms.get("main", "map"),
+				anchorPoint: new window.google.maps.Point(0, -29)
+			}));
+			vms.get("main", "searchBox").addListener("places_changed", function() {
+				let places = vms.get("main", "searchBox").getPlaces();
 				if (!places || !places.length) {
 					return;
 				}
-
 				// Clear out the old markers.
 				markers.forEach(function(marker) {
 					marker.setMap(null);
@@ -99,19 +76,19 @@
 						return;
 					}
 					let icon = {
-						url: place.icon,
-						size: new window.google.maps.Size(71, 71),
-						origin: new window.google.maps.Point(0, 0),
-						anchor: new window.google.maps.Point(17, 34),
-						scaledSize: new window.google.maps.Size(25, 25)
+						"url": place.icon,
+						"size": new window.google.maps.Size(71, 71),
+						"origin": new window.google.maps.Point(0, 0),
+						"anchor": new window.google.maps.Point(17, 34),
+						"scaledSize": new window.google.maps.Size(25, 25)
 					};
 
-					// Create a marker for each place.
+					// Create a this.marker for each place.
 					markers.push(new window.google.maps.Marker({
-						map: ViewModel.map,
-						icon: icon,
-						title: place.name,
-						position: place.geometry.location
+						"map": vms.get("main", "map"),
+						"icon": icon,
+						"title": place.name,
+						"position": place.geometry.location
 					}));
 
 					if (place.geometry.viewport) {
@@ -121,59 +98,24 @@
 						bounds.extend(place.geometry.location);
 					}
 				});
-				ViewModel.map.fitBounds(bounds);
+				vms.get("main", "map").fitBounds(bounds);
 			});
 
-
-			ViewModel.autocomplete.addListener("place_changed", function() {
-				infowindow.close();
-				marker.setVisible(false);
-				let place = ViewModel.autocomplete.getPlace();
-				if (!place.geometry) {
-					// User entered the name of a Place that was not suggested and
-					// pressed the Enter key, or the Place Details request failed.
-					return;
-				}
-
-				// If the place has a geometry, then present it on a map.
-				if (place.geometry.viewport) {
-					ViewModel.map.fitBounds(place.geometry.viewport);
-				} else {
-					ViewModel.map.setCenter(place.geometry.location);
-					ViewModel.map.setZoom(17);  // Why 17? Because it looks good.
-				}
-				marker.setIcon(/** @type {google.maps.Icon} */({
-					url: place.icon,
-					size: new window.google.maps.Size(71, 71),
-					origin: new window.google.maps.Point(0, 0),
-					anchor: new window.google.maps.Point(17, 34),
-					scaledSize: new window.google.maps.Size(35, 35)
-				}));
-				marker.setPosition(place.geometry.location);
-				marker.setVisible(true);
-
-				let address = "";
-				if (place.address_components) {
-					address = [
-						(place.address_components[0] && place.address_components[0].short_name || ""),
-						(place.address_components[1] && place.address_components[1].short_name || ""),
-						(place.address_components[2] && place.address_components[2].short_name || "")
-					].join(" ");
-				}
-
-				infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + address);
-				infowindow.open(ViewModel.map, marker);
+			return this;
+		},
+		"init": function () {
+			vms.main = new ViewModel(ko);
+			ko.applyBindings(vms.main);
+			app.getHTMLElements().initGeoLocation().then((location) => {
+				console.log("your atual location is: " + location);
+			}).catch((err) => {
+				console.log(err);
+			}).then(() => {
+				app.initGMaps();
 			});
-
-
-
-
 		}
 	};
 
-
 	window.onload = app.init;
-
-
 
 }(window));
