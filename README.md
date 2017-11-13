@@ -10,7 +10,7 @@
 - Gulp
 
 ### DEPENDENCIES
-* .env file containing: APP_PORT, APP_SECRET and MAPS_API_KEY (.env_model present on repo)
+* .env file containing: APP_PORT, APP_SECRET and MAPS_API_KEY (.env_model present on repo) <- The file was hidden. Sorry about that
 * Node and NPM
 * install libraries with npm install
 
