@@ -5,6 +5,7 @@
 	const GmapModel = require("./model/GmapModel");
 	const getMatrix = require("./factory/factory").getMatrix;
 	const getDirections = require("./factory/factory").getDirections;
+	const getFavLocations = require("./factory/factory").getFavoriteLocations;
 
 	getMatrix({
 		"origins": "4800 El camino Real, Los Altos, CA",
@@ -20,6 +21,7 @@
 
 	let vms = require("./helpers/vms");
 	let elements = require("./helpers/elements");
+	let methods = require("./helpers/methods")(vms);
 	let ViewModel = require("./viewmodels/MainVM");
 	let app = {
 		"getHTMLElements": function () {
@@ -61,41 +63,7 @@
 				if (!places || !places.length) {
 					return;
 				}
-				// Clear out the old markers.
-
-				// vms.main.hideMarkers();
-				// vms.main.cleanMarkers();
-
-				// For each place, get the icon, name and location.
-				places.forEach(function(place) {
-					vms.main.addListOption(place);
-					if (!place.geometry) {
-						console.log("Returned place contains no geometry");
-						return;
-					}
-					let icon = {
-						"url": place.icon,
-						"size": new window.google.maps.Size(71, 71),
-						"origin": new window.google.maps.Point(0, 0),
-						"anchor": new window.google.maps.Point(17, 34),
-						"scaledSize": new window.google.maps.Size(25, 25)
-					};
-
-					// Create a this.marker for each place.
-					vms.main.addMarker(new window.google.maps.Marker({
-						"map": vms.get("main", "map"),
-						"icon": icon,
-						"title": place.name,
-						"position": place.geometry.location
-					}));
-
-					if (place.geometry.viewport) {
-						// Only geocodes have viewport.
-						vms.get("main", "bounds").union(place.geometry.viewport);
-					} else {
-						vms.get("main", "bounds").extend(place.geometry.location);
-					}
-				});
+				places.forEach(methods.generateNewOption);
 				vms.get("main", "map").fitBounds(vms.get("main", "bounds"));
 			});
 
@@ -104,12 +72,21 @@
 		"init": function () {
 			vms.main = new ViewModel(ko);
 			ko.applyBindings(vms.main);
+			ko.onError = function(error) {
+				alert(error);
+			};
 			app.getHTMLElements().initGeoLocation().then((location) => {
 				console.log("your atual location is: " + location);
 			}).catch((err) => {
 				console.log(err);
 			}).then(() => {
 				app.initGMaps();
+				getFavLocations().then((data) => {
+					data.forEach(methods.generateNewOption);
+				}).catch((err) => {
+					alert("Error getting fav locations: " + err);
+				})
+
 			});
 		}
 	};

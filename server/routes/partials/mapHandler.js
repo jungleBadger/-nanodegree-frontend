@@ -3,6 +3,7 @@
 
     module.exports = function (app, request) {
     	const maps = require("../../helpers/maps");
+    	const favoriteLocations = require("../../model/favLocations");
 		app.get("/getMap", function (req, res) {
 			maps.getMapClient({
 				"libraries": req.query.libraries
@@ -64,6 +65,10 @@
 					return err ? res.status(500).send(err) : res.status(200).send(response);
 				}
 			);
+		});
+
+		app.get("/getFavLocations", function (req, res) {
+			return res.status(200).send(favoriteLocations);
 		});
 	}
 

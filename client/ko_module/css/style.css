@@ -3,23 +3,32 @@
 	width: 100%;
 	height: 100%;
 	display: flex;
+	font-family: Roboto;
+	background-color: gainsboro;
 }
 
 #sidemenu {
 	height: 100%;
 	z-index: 20;
-	display: block;
 	background: white;
 	flex: 4;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	box-shadow: 0px 0px 1px 1px white;
 }
 
-#map {
-	flex: 8;
-	height: 100%;
+#sidemenu > header {
+	width: 100%;
+	display: flex;
+}
+
+#toggle-results {
+	display: none;
 }
 
 .controls {
-	margin-top: 10px;
 	border: 1px solid transparent;
 	border-radius: 2px 0 0 2px;
 	box-sizing: border-box;
@@ -29,6 +38,7 @@
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
+
 #pac-input {
 	background-color: #fff;
 	font-family: Roboto;
@@ -37,7 +47,7 @@
 	margin-left: 12px;
 	padding: 0 11px 0 13px;
 	text-overflow: ellipsis;
-	width: 300px;
+	width: 100%;
 }
 
 #pac-input:focus {
@@ -48,3 +58,93 @@
 	font-family: Roboto;
 }
 
+
+#sidemenu > #options-list {
+	flex: 1;
+	width: 100%;
+	overflow: auto;
+	max-height: 100%;
+	align-items: center;
+	padding: 10px;
+	box-sizing: border-box;
+	flex-direction: column;
+	display: none;
+}
+
+#sidemenu > #options-list.active {
+	display: flex;
+
+}
+.filter-holder {
+	width: 100%;
+	margin: 10px 0;
+}
+
+#sidemenu > header > button {
+	border: 1px solid green;
+	background-color: white;
+	color: black;
+	margin: 2px;
+	cursor: pointer;
+
+}
+
+.filter {
+	width: 100%;
+}
+
+.option-item {
+	width: 100%;
+	border: 1px solid gainsboro;
+	box-sizing: border-box;
+	padding: 5px;
+	margin: 3px 0;
+	cursor: pointer;
+	width: 100%;
+}
+
+.option-item:hover {
+	background-color: gainsboro;
+}
+
+.option-item.selected {
+	background-color: gainsboro;
+}
+
+#map {
+	flex: 8;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+@media screen and (max-width: 740px) {
+	#sidemenu {
+		position: absolute;
+		height: 60px;
+		background: rgba(0, 0, 0, .2);
+		width: 100%;
+	}
+
+	#toggle-results {
+		display: block;
+	}
+
+	.option-item {
+		background-color: white;
+	}
+
+
+	#sidemenu > #options-list.active {
+		display: none;
+	}
+
+	#sidemenu.show-results {
+		height: 100%;
+	}
+
+	#sidemenu.show-results > #options-list.active {
+		display: flex;
+	}
+}

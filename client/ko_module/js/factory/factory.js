@@ -15,6 +15,9 @@
 			return httpClient.get(
 				`/directions?origin=${encodeURIComponent(opts.origin)}&waypoints=${encodeURIComponent(opts.waypoints)}&destination=${encodeURIComponent(opts.destination)}`
 			);
+		},
+		"getFavoriteLocations": function () {
+			return httpClient.get("/getFavLocations");
 		}
 	}
 }());
