@@ -506,6 +506,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (window) {
 	"use strict";
 
+	var infoWindowTemplate = require("../templates/infoWindow");
+
 	module.exports = function Constructor(ko) {
 		var _this2 = this;
 
@@ -571,6 +573,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					if (self.markers[markerId].id === this.id) {
 						self.animateMarker(self.markers[markerId]);
 						self.infoWindow.open(self.map, self.markers[markerId]);
+						self.highlightPlace(this).then(function (placeData) {
+							self.infoWindow.setContent(infoWindowTemplate(_this.name, placeData.photosUrls[0], _this.formatted_address));
+						});
 					}
 				}
 			}
@@ -622,7 +627,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	};
 })(window);
 
-},{"babel-runtime/core-js/promise":11}],10:[function(require,module,exports){
+},{"../templates/infoWindow":8,"babel-runtime/core-js/promise":11}],10:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/json/stringify"), __esModule: true };
 },{"core-js/library/fn/json/stringify":12}],11:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/promise"), __esModule: true };
