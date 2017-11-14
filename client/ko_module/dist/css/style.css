@@ -147,6 +147,29 @@
 	        align-items: center;
 }
 
+.error {
+	display: none;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background: orangered;
+	color: white;
+	padding: 10px;
+	border: 1px solid gainsboro;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+
+.error.active {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+
 @media screen and (max-width: 740px) {
 	#sidemenu {
 		position: absolute;
@@ -177,4 +200,13 @@
 		display: -ms-flexbox;
 		display: flex;
 	}
+
+	.error {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		width: 100%;
+		margin-bottom: 0;
+	}
 }
+

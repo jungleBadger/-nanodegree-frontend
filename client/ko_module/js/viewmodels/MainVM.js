@@ -7,7 +7,7 @@
 		let self = this;
 		this.addressFilter = ko.observable();
 		this.optionsFilter = ko.observable();
-
+		this.errorMessage = ko.observable("");
 		this.map = "";
 		this.infoWindow = "";
 		this.markers = {};
@@ -19,6 +19,13 @@
 		};
 		this.searchBox = "";
 		this.autocomplete = "";
+
+		this.showErrorMessage = function (errorMsg) {
+			this.errorMessage(errorMsg);
+		};
+		this.cleanErrorMessage = function () {
+			this.errorMessage("");
+		};
 
 		this.addMarker = function (marker) {
 			this.markers[marker.id] = marker;
@@ -63,7 +70,6 @@
 				if (self.markers.hasOwnProperty(markerId)) {
 					if (self.markers[markerId].id === this.id) {
 						self.animateMarker(self.markers[markerId]);
-						self.infoWindow.open(self.map, self.markers[markerId]);
 						self.highlightPlace(this).then((placeData) => {
 							self.infoWindow.setContent(
 								infoWindowTemplate(
@@ -72,6 +78,8 @@
 									this.formatted_address
 								)
 							);
+						}).catch((err) => {
+							self.showErrorMessage("Unexpected error: " + err);
 						});
 					}
 				}

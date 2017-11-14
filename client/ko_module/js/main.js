@@ -3,21 +3,7 @@
 
 	const ko = require("knockout");
 	const GmapModel = require("./model/GmapModel");
-	const getMatrix = require("./factory/factory").getMatrix;
-	const getDirections = require("./factory/factory").getDirections;
 	const getFavLocations = require("./factory/factory").getFavoriteLocations;
-
-	getMatrix({
-		"origins": "4800 El camino Real, Los Altos, CA",
-		"destinations": "2465 Lathem Street, Mountain View, CA"
-	}).then((response) => console.log(response));
-
-	getDirections({
-		"origin": "4800 El camino Real, Los Altos, CA",
-		"waypoints": "Palo Alto, CA|Springfield, CA",
-		"destination": "2465 Lathem Street, Mountain View, CA"
-	}).then((response) => console.log(response));
-
 
 	let vms = require("./helpers/vms");
 	let elements = require("./helpers/elements");
@@ -72,7 +58,7 @@
 			vms.set("main", "service", new window.google.maps.places.PlacesService(vms.get("main", "map")));
 			vms.get("main", "service").nearbySearch({
 				"location": initialPoint,
-				"radius": "300",
+				"radius": "100",
 				"query": "restaurant",
 				"openNow": true
 			}, function (results, status) {
@@ -84,15 +70,17 @@
 								vms.get("main", "service").getDetails(place, function (finalResult, innerStatus) {
 									if (innerStatus === window.google.maps.places.PlacesServiceStatus.OK) {
 										methods.generateNewOption(finalResult);
+									} else if (innerStatus === window.google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+										vms.main.showErrorMessage("Error gathering nearby locations: You exceeded API limits");
 									} else {
-										alert(innerStatus);
+										vms.main.showErrorMessage("Unknown error: " + innerStatus);
 									}
 								});
 							}
 						});
 					}
 				} else {
-					alert(status);
+					vms.main.showErrorMessage("Unexpected error: " + status);
 				}
 			});
 

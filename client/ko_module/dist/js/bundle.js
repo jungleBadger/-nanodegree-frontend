@@ -167,7 +167,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					"scaledSize": new window.google.maps.Size(25, 25)
 				};
 
-				// Create a this.marker for each place.
 				var marker = new window.google.maps.Marker({
 					"id": place.id,
 					"map": vms.get("main", "map"),
@@ -175,15 +174,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					"title": place.name,
 					"position": place.geometry.location,
 					"animation": window.google.maps.Animation.DROP
-
 				});
 
 				marker.addListener("click", function () {
 					vms.main.animateMarker(marker);
 					vms.get("main", "infoWindow").setContent(place.name);
 					vms.main.highlightPlace(place).then(function (placeData) {
-						console.log(placeData);
 						vms.get("main", "infoWindow").setContent(infoWindowTemplate(place.name, placeData.photosUrls[0], place.formatted_address));
+					}).catch(function (err) {
+						vms.main.showErrorMessage("Unexpected error: " + err);
 					});
 
 					vms.get("main", "infoWindow").open(vms.get("main", "map"), marker);
@@ -233,24 +232,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 	var ko = require("knockout");
 	var GmapModel = require("./model/GmapModel");
-	var getMatrix = require("./factory/factory").getMatrix;
-	var getDirections = require("./factory/factory").getDirections;
 	var getFavLocations = require("./factory/factory").getFavoriteLocations;
-
-	getMatrix({
-		"origins": "4800 El camino Real, Los Altos, CA",
-		"destinations": "2465 Lathem Street, Mountain View, CA"
-	}).then(function (response) {
-		return console.log(response);
-	});
-
-	getDirections({
-		"origin": "4800 El camino Real, Los Altos, CA",
-		"waypoints": "Palo Alto, CA|Springfield, CA",
-		"destination": "2465 Lathem Street, Mountain View, CA"
-	}).then(function (response) {
-		return console.log(response);
-	});
 
 	var vms = require("./helpers/vms");
 	var elements = require("./helpers/elements");
@@ -302,7 +284,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			vms.set("main", "service", new window.google.maps.places.PlacesService(vms.get("main", "map")));
 			vms.get("main", "service").nearbySearch({
 				"location": initialPoint,
-				"radius": "300",
+				"radius": "100",
 				"query": "restaurant",
 				"openNow": true
 			}, function (results, status) {
@@ -314,15 +296,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 								vms.get("main", "service").getDetails(place, function (finalResult, innerStatus) {
 									if (innerStatus === window.google.maps.places.PlacesServiceStatus.OK) {
 										methods.generateNewOption(finalResult);
+									} else if (innerStatus === window.google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+										vms.main.showErrorMessage("Error gathering nearby locations: You exceeded API limits");
 									} else {
-										alert(innerStatus);
+										vms.main.showErrorMessage("Unknown error: " + innerStatus);
 									}
 								});
 							}
 						});
 					}
 				} else {
-					alert(status);
+					vms.main.showErrorMessage("Unexpected error: " + status);
 				}
 			});
 
@@ -490,7 +474,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	"use strict";
 
 	module.exports = function (localTitle, imgSrc, localAddress) {
-		return "<div class=\"infowindow\"><h5>" + localTitle + "</h5><img src=\"" + imgSrc + "\" /><div>" + localAddress + "</div></div>";
+		var imgUrl = imgSrc ? "<img src=\"" + imgSrc + "\" />" : "";
+		return "<div class=\"infowindow\"><h5>" + localTitle + "</h5>" + imgUrl + "<div>" + localAddress + "</div></div>";
 	};
 })();
 
@@ -514,7 +499,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var self = this;
 		this.addressFilter = ko.observable();
 		this.optionsFilter = ko.observable();
-
+		this.errorMessage = ko.observable("");
 		this.map = "";
 		this.infoWindow = "";
 		this.markers = {};
@@ -526,6 +511,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		};
 		this.searchBox = "";
 		this.autocomplete = "";
+
+		this.showErrorMessage = function (errorMsg) {
+			this.errorMessage(errorMsg);
+		};
+		this.cleanErrorMessage = function () {
+			this.errorMessage("");
+		};
 
 		this.addMarker = function (marker) {
 			this.markers[marker.id] = marker;
@@ -572,9 +564,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				if (self.markers.hasOwnProperty(markerId)) {
 					if (self.markers[markerId].id === this.id) {
 						self.animateMarker(self.markers[markerId]);
-						self.infoWindow.open(self.map, self.markers[markerId]);
 						self.highlightPlace(this).then(function (placeData) {
 							self.infoWindow.setContent(infoWindowTemplate(_this.name, placeData.photosUrls[0], _this.formatted_address));
+						}).catch(function (err) {
+							self.showErrorMessage("Unexpected error: " + err);
 						});
 					}
 				}

@@ -15,7 +15,6 @@
 					"scaledSize": new window.google.maps.Size(25, 25)
 				};
 
-				// Create a this.marker for each place.
 				let marker = new window.google.maps.Marker({
 					"id": place.id,
 					"map": vms.get("main", "map"),
@@ -23,14 +22,12 @@
 					"title": place.name,
 					"position": place.geometry.location,
 					"animation": window.google.maps.Animation.DROP
-
 				});
 
 				marker.addListener("click", function () {
 					vms.main.animateMarker(marker);
 					vms.get("main", "infoWindow").setContent(place.name);
 					vms.main.highlightPlace(place).then((placeData) => {
-						console.log(placeData);
 						vms.get("main", "infoWindow").setContent(
 							infoWindowTemplate(
 								place.name,
@@ -38,6 +35,8 @@
 								place.formatted_address
 							)
 						);
+					}).catch((err) => {
+						vms.main.showErrorMessage("Unexpected error: " + err);
 					});
 
 					vms.get("main", "infoWindow").open(vms.get("main", "map"), marker);

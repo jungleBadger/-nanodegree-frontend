@@ -119,6 +119,24 @@
 	align-items: center;
 }
 
+.error {
+	display: none;
+	flex-direction: column;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background: orangered;
+	color: white;
+	padding: 10px;
+	border: 1px solid gainsboro;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+
+.error.active {
+	display: flex;
+}
+
+
 @media screen and (max-width: 740px) {
 	#sidemenu {
 		position: absolute;
@@ -147,4 +165,13 @@
 	#sidemenu.show-results > #options-list.active {
 		display: flex;
 	}
+
+	.error {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		width: 100%;
+		margin-bottom: 0;
+	}
 }
+

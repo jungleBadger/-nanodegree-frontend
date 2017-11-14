@@ -36,6 +36,10 @@
 			<button class="button" data-bind="click: clearResults">Clear results</button>
 			<button id="toggle-results" class="button" data-bind="click: toggleResults">Toggle results</button>
 		</header>
+		<div data-bind="if: errorMessage, css: { active: errorMessage }" class="error">
+			<div data-bind="text: errorMessage"></div>
+			<button data-bind="click: cleanErrorMessage">OK</button>
+		</div>
 		<div id="options-list"
 			 data-bind="value: optionsFilter, valueUpdate: 'input', css: { active: true }">
 			<div class="filter-holder"
