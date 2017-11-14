@@ -1,6 +1,8 @@
 (function () {
 	"use strict";
-	// "CmRSAAAAsHHOUANqZxZ8oJQutUw-pLrMmMuBYMeeUt6NXVnapEmRfOxfy227z49zZ2pv7xh7hzjbZygL_Gnah3weg7I4VXAPPHAWM6iIPiF0gSAsv3cWgZVW-Jmt_9dylpLxF3xtEhAyuZ1GhdBDDIvV22miKZARGhRgQj4VzIojzxfcf8B6xlGkdZq2jw"
+
+
+	process.env.MAPS_API_KEY = "AIzaSyD78KpZwWrqwYKWza580DxV2O-0AkUhAvY";
 	const request = require("request");
 	const BASE_URL = "https://maps.googleapis.com/maps/api";
 	const API_KEY = process.env.MAPS_API_KEY;

@@ -25,7 +25,7 @@
 	app.use(compress());
 	app.use(cookieParser());
 	app.use(cookieSession({
-		"secret": process.env.APP_SECRET,
+		"secret": process.env.APP_SECRET || "SUPERSECRET",
 		"maxAge": 86400000,
 		"saveUninitialized": false,
 		"resave": false,
