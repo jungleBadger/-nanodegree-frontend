@@ -2,8 +2,8 @@
     "use strict";
 
     module.exports = function (app, request) {
-    	const maps = require("../../helpers/maps");
-    	const favoriteLocations = require("../../model/favLocations");
+		const maps = require("../../helpers/maps");
+		const favoriteLocations = require("../../model/favLocations");
 		app.get("/getMap", function (req, res) {
 			maps.getMapClient({
 				"libraries": req.query.libraries
