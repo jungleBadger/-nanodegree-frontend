@@ -32,7 +32,8 @@
 							infoWindowTemplate(
 								place.name,
 								placeData.photosUrls[0],
-								place.formatted_address
+								place.formatted_address,
+								placeData.foursquareInfo
 							)
 						);
 					}).catch((err) => {

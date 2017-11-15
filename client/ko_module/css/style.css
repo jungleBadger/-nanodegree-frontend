@@ -175,3 +175,13 @@
 	}
 }
 
+.info-block {
+	display: flex;
+}
+
+.info-block > div {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

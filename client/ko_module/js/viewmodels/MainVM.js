@@ -92,7 +92,8 @@
 								infoWindowTemplate(
 									this.name,
 									placeData.photosUrls[0],
-									this.formatted_address
+									this.formatted_address,
+									placeData.foursquareInfo
 								)
 							);
 							self.infoWindow.open(self.map, self.markers[markerId]);
@@ -112,6 +113,7 @@
 				let photosUrl = [];
 				self.service.getDetails(place, function (finalResult, innerStatus) {
 					if (innerStatus === window.google.maps.places.PlacesServiceStatus.OK) {
+
 						if (finalResult.photos) {
 							finalResult.photos.forEach((photo) => {
 								try {
@@ -125,10 +127,20 @@
 							});
 						}
 						finalResult.photosUrls = photosUrl;
-						console.log(place);
 						// getFoursquareInfo()
-
-						resolve(finalResult);
+						getFoursquareInfo({
+							"lat": typeof place.geometry.location.lat === "function" ? place.geometry.location.lat() : place.geometry.location.lat,
+							"lng": typeof place.geometry.location.lng === "function" ? place.geometry.location.lng() : place.geometry.location.lng,
+							"keyword": place.name
+						}).then((foursquareResult) => {
+							if (foursquareResult && foursquareResult.hasOwnProperty("response")) {
+								finalResult.foursquareInfo = foursquareResult.response;
+							}
+							return resolve(finalResult);
+						}).catch((err) => {
+							self.showErrorMessage("Error gathering foursquare info: " + err);
+							return resolve(finalResult);
+						});
 					} else {
 						reject(innerStatus);
 					}
