@@ -5,7 +5,7 @@
 		"silent": true
 	});
 	process.isLocal = process.argv.some((args) => {
-		return args === "--local" || "--l"
+		return args === "--local" || "--l";
 	});
 
     const express = require("express");
