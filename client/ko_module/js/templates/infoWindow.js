@@ -6,8 +6,8 @@
 		let imgUrl = imgSrc ? `<img src="${imgSrc}" />` : "<div>No picture available</div>";
 		let foursquareInfoBlock = "<div>";
 		try {
-			if (foursquareInfo.venues &&
-				foursquareInfo.venues.length &&
+			if (foursquareInfo && foursquareInfo.venues &&
+				Array.isArray(foursquareInfo.venues) &&
 				typeof foursquareInfo.venues[0] === "object") {
 
 				if (foursquareInfo.venues[0].hasOwnProperty("hereNow")) {
