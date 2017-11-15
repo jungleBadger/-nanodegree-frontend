@@ -2,6 +2,7 @@
     "use strict";
 
 	const infoWindowTemplate = require("../templates/infoWindow");
+	const getFoursquareInfo = require("../factory/factory").getFoursquareInfo;
 
 	module.exports = function Constructor(ko) {
 		let self = this;
@@ -94,6 +95,7 @@
 									this.formatted_address
 								)
 							);
+							self.infoWindow.open(self.map, self.markers[markerId]);
 						}).catch((err) => {
 							self.showErrorMessage("Unexpected error: " + err);
 						});
@@ -123,6 +125,9 @@
 							});
 						}
 						finalResult.photosUrls = photosUrl;
+						console.log(place);
+						// getFoursquareInfo()
+
 						resolve(finalResult);
 					} else {
 						reject(innerStatus);

@@ -3,6 +3,7 @@
 
 	module.exports = function (app, request) {
 		const maps = require("../../helpers/maps");
+		const foursquare = require("../../helpers/foursquare");
 		const favoriteLocations = require("../../model/favLocations");
 		app.get("/getMap", function (req, res) {
 			maps.getMapClient({
@@ -65,6 +66,18 @@
 					return err ? res.status(500).send(err) : res.status(200).send(response);
 				}
 			);
+		});
+
+		app.get("/foursquare", function (req, res) {
+			foursquare.getVenueInfo(
+				req.query.lat,
+				req.query.lng,
+				req.query.keyword
+			).then((result) => {
+				return res.status(200).send(result);
+			}).catch((err) => {
+				return res.status(500).send(err);
+			});
 		});
 
 		app.get("/getFavLocations", function (req, res) {

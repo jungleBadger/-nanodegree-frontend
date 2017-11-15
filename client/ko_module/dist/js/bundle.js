@@ -125,6 +125,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		},
 		"getFavoriteLocations": function getFavoriteLocations() {
 			return httpClient.get("/getFavLocations");
+		},
+		"getFoursquareInfo": function getFoursquareInfo(opts) {
+			return httpClient.get("/foursquare?lat=" + encodeURIComponent(opts.lat) + "&lng=" + encodeURIComponent(opts.lng) + "&keyword=" + encodeURIComponent(opts.keyword));
 		}
 	};
 })();
@@ -479,7 +482,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	"use strict";
 
 	module.exports = function (localTitle, imgSrc, localAddress) {
-		var imgUrl = imgSrc ? "<img src=\"" + imgSrc + "\" />" : "";
+		var imgUrl = imgSrc ? "<img src=\"" + imgSrc + "\" />" : "<div>No picture available</div>";
 		return "<div class=\"infowindow\"><h5>" + localTitle + "</h5>" + imgUrl + "<div>" + localAddress + "</div></div>";
 	};
 })();
@@ -497,6 +500,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	"use strict";
 
 	var infoWindowTemplate = require("../templates/infoWindow");
+	var getFoursquareInfo = require("../factory/factory").getFoursquareInfo;
 
 	module.exports = function Constructor(ko) {
 		var _this2 = this;
@@ -581,17 +585,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				option.selected(option.id === _this.id);
 			});
 
-			for (var markerId in self.markers) {
+			var _loop = function _loop(markerId) {
 				if (self.markers.hasOwnProperty(markerId)) {
-					if (self.markers[markerId].id === this.id) {
+					if (self.markers[markerId].id === _this.id) {
 						self.animateMarker(self.markers[markerId]);
-						self.highlightPlace(this).then(function (placeData) {
+						self.highlightPlace(_this).then(function (placeData) {
 							self.infoWindow.setContent(infoWindowTemplate(_this.name, placeData.photosUrls[0], _this.formatted_address));
+							self.infoWindow.open(self.map, self.markers[markerId]);
 						}).catch(function (err) {
 							self.showErrorMessage("Unexpected error: " + err);
 						});
 					}
 				}
+			};
+
+			for (var markerId in self.markers) {
+				_loop(markerId);
 			}
 			self.bounds.extend(this.geometry.location);
 			self.map.fitBounds(self.bounds);
@@ -616,6 +625,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							});
 						}
 						finalResult.photosUrls = photosUrl;
+						console.log(place);
+						// getFoursquareInfo()
+
 						resolve(finalResult);
 					} else {
 						reject(innerStatus);
@@ -654,7 +666,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	};
 })(window);
 
-},{"../templates/infoWindow":8,"babel-runtime/core-js/promise":11}],10:[function(require,module,exports){
+},{"../factory/factory":2,"../templates/infoWindow":8,"babel-runtime/core-js/promise":11}],10:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/json/stringify"), __esModule: true };
 },{"core-js/library/fn/json/stringify":12}],11:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/promise"), __esModule: true };
