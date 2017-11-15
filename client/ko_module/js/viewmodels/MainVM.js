@@ -41,6 +41,22 @@
 				}
 			}
 		};
+		this.showAllMarkers = function () {
+			for (let markerId in self.markers) {
+				if (self.markers.hasOwnProperty(markerId)) {
+					self.markers[markerId].setVisible(true);
+				}
+			}
+		};
+
+		this.hideMarker = function (markerId) {
+			self.markers[markerId].setVisible(false);
+		};
+
+		this.showMarker = function (markerId) {
+			self.markers[markerId].setVisible(true);
+		};
+
 		this.animateMarker = function (marker) {
 			if (marker.getAnimation() !== null) {
 				marker.setAnimation(null);
@@ -121,11 +137,23 @@
 		};
 
 		this.filteredOptionsList = ko.computed(() => {
-			return this.optionsFilter() ?
-				this.optionsList().filter((item) => {
-					return item.formatted_address.indexOf(this.optionsFilter()) > -1
-				}) :
-				this.optionsList();
+
+			if (this.optionsFilter()) {
+				return this.optionsList().filter((item) => {
+					let showItem = item.formatted_address.indexOf(this.optionsFilter()) > -1;
+					if (showItem) {
+						this.showMarker(item.id);
+					} else {
+						this.hideMarker(item.id);
+					}
+					return showItem;
+				});
+			} else {
+				this.showAllMarkers();
+				return this.optionsList();
+			}
+
+
 		});
 
 		this.showResults = ko.observable(false);

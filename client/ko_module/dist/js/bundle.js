@@ -533,6 +533,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				}
 			}
 		};
+		this.showAllMarkers = function () {
+			for (var markerId in self.markers) {
+				if (self.markers.hasOwnProperty(markerId)) {
+					self.markers[markerId].setVisible(true);
+				}
+			}
+		};
+
+		this.hideMarker = function (markerId) {
+			self.markers[markerId].setVisible(false);
+		};
+
+		this.showMarker = function (markerId) {
+			self.markers[markerId].setVisible(true);
+		};
+
 		this.animateMarker = function (marker) {
 			if (marker.getAnimation() !== null) {
 				marker.setAnimation(null);
@@ -608,9 +624,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		};
 
 		this.filteredOptionsList = ko.computed(function () {
-			return _this2.optionsFilter() ? _this2.optionsList().filter(function (item) {
-				return item.formatted_address.indexOf(_this2.optionsFilter()) > -1;
-			}) : _this2.optionsList();
+
+			if (_this2.optionsFilter()) {
+				return _this2.optionsList().filter(function (item) {
+					var showItem = item.formatted_address.indexOf(_this2.optionsFilter()) > -1;
+					if (showItem) {
+						_this2.showMarker(item.id);
+					} else {
+						_this2.hideMarker(item.id);
+					}
+					return showItem;
+				});
+			} else {
+				_this2.showAllMarkers();
+				return _this2.optionsList();
+			}
 		});
 
 		this.showResults = ko.observable(false);
