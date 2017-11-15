@@ -33,6 +33,12 @@
 			});
 		},
 		"initGMaps": function () {
+
+
+			if (window && !window.google) {
+				return vms.main.showErrorMessage("ERROR LOADING GOOGLE MAPS LIBRARY. APP UNAVAILABLE");
+			}
+
 			let initialPoint = new window.google.maps.LatLng(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng);
 			vms.set("main", "map", new window.google.maps.Map(
 				elements.get("mapEl"),
@@ -101,7 +107,7 @@
 				getFavLocations().then((data) => {
 					data.forEach(methods.generateNewOption);
 				}).catch((err) => {
-					alert("Error getting fav locations: " + err);
+					vms.main.showErrorMessage("Error getting fav locations: " + err);
 				})
 
 			});

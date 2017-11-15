@@ -262,6 +262,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		},
 		"initGMaps": function initGMaps() {
+
+			if (window && !window.google) {
+				return vms.main.showErrorMessage("ERROR LOADING GOOGLE MAPS LIBRARY. APP UNAVAILABLE");
+			}
+
 			var initialPoint = new window.google.maps.LatLng(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng);
 			vms.set("main", "map", new window.google.maps.Map(elements.get("mapEl"), new GmapModel(vms.get("main", "currentPos").lat, vms.get("main", "currentPos").lng)));
 
@@ -327,7 +332,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				getFavLocations().then(function (data) {
 					data.forEach(methods.generateNewOption);
 				}).catch(function (err) {
-					alert("Error getting fav locations: " + err);
+					vms.main.showErrorMessage("Error getting fav locations: " + err);
 				});
 			});
 		}
