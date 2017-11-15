@@ -26,9 +26,9 @@
 		<header>
 			<input
 				id="pac-input"
-			   	class="controls"
+				class="controls"
 				type="text"
-			  	data-bind="
+				data-bind="
 			  	value: addressFilter,
 			  	valueUpdate: 'input'"
 				placeholder="Enter a location"
@@ -60,7 +60,7 @@
 					data-bind="
 						click: $parent.selectItem,
 						css: { selected: selected }"
-					 class="option-item">
+					class="option-item">
 					<div data-bind="text: name"></div>
 					<div data-bind="text: formatted_address"></div>
 				</div>
@@ -76,8 +76,13 @@
 	</div>
 </div>
 <noscript>Your browser does not support Script at this time</noscript>
-<script defer src="/getMap?libraries=places"></script>
-<script async src="./ko_module/dist/js/bundle.js"></script>
+<script>
+	window.mapsErrorHandler = function (e) {
+		alert("error loading MAPS: " + e);
+	}
+</script>
+<script async defer src="./ko_module/dist/js/bundle.js" onerror="mapsErrorHandler()"></script>
+<script async defer src="/getMap?libraries=places"></script>
 
 </body>
 </html>
