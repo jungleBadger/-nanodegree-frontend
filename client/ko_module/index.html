@@ -65,8 +65,8 @@
 					<div data-bind="text: formatted_address"></div>
 				</div>
 			</div>
-			<div data-bind="if: !optionsList().length">
-				No results. Tap the input to search.
+			<div id="no-result" data-bind="if: !optionsList().length">
+				No results. Tap the input to search. List and filter will only show when results available
 			</div>
 		</div>
 	</aside>
