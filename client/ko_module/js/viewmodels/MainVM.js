@@ -102,6 +102,7 @@
 			}
 			self.bounds.extend(this.geometry.location);
 			self.map.fitBounds(self.bounds);
+			self.map.panTo(self.markers[this.id].getPosition());
 		};
 
 		this.highlightPlace = function (place) {
