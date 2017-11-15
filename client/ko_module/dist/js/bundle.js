@@ -658,7 +658,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							});
 						}
 						finalResult.photosUrls = photosUrl;
-						// getFoursquareInfo()
 						getFoursquareInfo({
 							"lat": typeof place.geometry.location.lat === "function" ? place.geometry.location.lat() : place.geometry.location.lat,
 							"lng": typeof place.geometry.location.lng === "function" ? place.geometry.location.lng() : place.geometry.location.lng,

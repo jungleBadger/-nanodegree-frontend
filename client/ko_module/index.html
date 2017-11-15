@@ -76,13 +76,8 @@
 	</div>
 </div>
 <noscript>Your browser does not support Script at this time</noscript>
-<script>
-	window.mapsErrorHandler = function (e) {
-		alert("error loading MAPS: " + e);
-	}
-</script>
-<script async defer src="./ko_module/dist/js/bundle.js" onerror="mapsErrorHandler()"></script>
-<script async defer src="/getMap?libraries=places"></script>
+<script async defer src="./ko_module/dist/js/bundle.js" ></script>
+<script async defer src="/getMap?libraries=places" type="text/javascript"></script>
 
 </body>
 </html>
